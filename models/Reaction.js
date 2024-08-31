@@ -3,10 +3,10 @@ const { Schema } = require('mongoose');
 // Schema for reactions, not an actual model
 const reactionSchema = new Schema(
     {
-        /* reactionId: { // Create a reactionId using mongoose here
-            type: Schema.Types.ObjectId,
-         default: 
-        }, */
+        reactionId: { // Create a reactionId using mongoose.ObjectId
+            type: String,
+            default: mongoose.Types.ObjectId,
+        },
         reactionBody: { // The content for the reaction
             type: String,
             required: true,
