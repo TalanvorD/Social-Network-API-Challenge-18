@@ -4,7 +4,7 @@ const { User, Thought, Reaction } = require('../models'); // Importing models
 module.exports = {
     async getUsers(req, res) { // Returns all users and their associated friends
         try {
-            const users = await User.find({}).populate({ path: 'friends', select: '-__v' });
+            const users = await User.find({}).populate({ path: 'thoughts', select: '-__v' });
             if (users) { res.status(200).json(users); }
         } catch (err) {
             console.log(err);
@@ -14,9 +14,9 @@ module.exports = {
     
     async getSingleUser(req, res) { // Returns a single user and their associated friends
         try {
-            const singleUser = await User.findOne({ _id: ObjectId(req.params.userId)})
+            const singleUser = await User.findOne({ _id: req.params.userId })
                 .populate({ path: 'friends', select: 'username email' });
-            const singleUserFriend = await User.findOne({ _id: ObjectId(req.params.friendId) });
+            const singleUserFriend = await User.findOne({ _id: req.params.friendId });
             if (singleUser || singleUserFriend) { return res.status(200).json(singleUser || singleUserFriend); }
         } catch (err) {
             console.log(err);
@@ -44,7 +44,7 @@ module.exports = {
     
     async updateUser(req, res) { // Updates a user from a PUT json body
         try {
-            const updatedUser = await User.findOneAndUpdate({ _id: ObjectId(req.params.userId) },
+            const updatedUser = await User.findOneAndUpdate({ _id: req.params.userId },
                 {
                     email: req.body.email,
                     username: req.body.username
@@ -62,7 +62,7 @@ module.exports = {
     async deleteUser(req, res) { // Deletes a single user and associated thoughts
         try {
             const deletedUser = await User.findOneAndDelete({ _id: ObjectId(req.params.userId) }, { rawResult: true });
-            const deletedUserThoughts = await Thought.deleteMany({username: deletedUser.value.username}, { rawResult: true });
+            const deletedUserThoughts = await Thought.deleteMany({username: deletedUser.value.username}, { rawResult: true }); // Bonus for deleting associated thoughts along with the user.
             if (deletedUser && deletedUserThoughts) { return res.status(200).json({ message: `${deletedUser.value.username} and their associated thoughts have been deleted.` }); }
         } catch (err) {
             console.log(err);

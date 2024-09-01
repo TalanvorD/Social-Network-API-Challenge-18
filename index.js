@@ -1,16 +1,11 @@
 const express = require('express'); // Express server
-const db = require('./config/connection'); // MongoDB
-const routes = require('./routes'); // Routes import
+const db = require('./config/connection'); // MongoDB connection
+const routes = require('./routes'); // Importing routes
 
 const cwd = process.cwd();
 
 const PORT = process.env.PORT || 3001;
 const app = express();
-
-// Note: not necessary for the Express server to function. This just helps indicate what activity's server is running in the terminal.
-const activity = cwd.includes('Social-Network-API-Challenge-18')
-  ? cwd.split('Social-Network-API-Challenge-18')[1]
-  : cwd;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -18,6 +13,6 @@ app.use(routes);
 
 db.once('open', () => {
   app.listen(PORT, () => {
-    console.log(`API server for ${activity} running on port ${PORT}!`);
+    console.log(`API server for Social-Network-API-Challenge-18 running on port ${PORT}!`);
   });
 });

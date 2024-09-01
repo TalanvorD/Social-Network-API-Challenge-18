@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, Types, model } = require('mongoose');
 const reactionSchema = require('./Reaction.js'); // Importing the reactionSchema
 
 
@@ -13,6 +13,7 @@ const thoughtSchema = new Schema(
         },
         createdAt: {
             type: Date,
+            default: Date.now,
             get: (dateCreated) => { // Creates and formats a timestamp for the thought
                 const timeStamp = new Intl.DateTimeFormat('en-US', {
                     dateStyle: 'full',
@@ -25,7 +26,7 @@ const thoughtSchema = new Schema(
             type: String,
             required: true,
         },
-        reactions: [reactionSchema], // Array of the reactions using the reactionSchema
+        reactions: [ reactionSchema ], // Array of the reactions using the reactionSchema
     },
     {
         toJson: {
@@ -35,8 +36,8 @@ const thoughtSchema = new Schema(
     }
 );
 
-userSchema.virtual('reactionCount').get(function () { // reactionCount virtual, not stored in the DB
-        if (!userSchema.reactionss) {
+thoughtSchema.virtual('reactionCount').get(function () { // reactionCount virtual, gets the reactions for the thought for every user, not stored in the DB
+        if (!this.reactions) {
         return;
     } else {
         return this.reactions.length; // Retrieves the length of the reactions array and returns the value

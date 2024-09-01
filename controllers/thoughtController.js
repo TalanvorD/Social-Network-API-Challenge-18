@@ -67,7 +67,7 @@ module.exports = {
         }
     },
 
-    async createReaction(req, res) { // Creates a new reaction from a POST json body and associates it with a thought
+    async addReaction(req, res) { // Creates a new reaction from a POST json body and associates it with a thought
         try {
             const newReaction = await Thought.findOneAndUpdate({ _id: ObjectId(req.params.thoughtId) },
             {

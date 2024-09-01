@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, Types, model } = require('mongoose');
 
 
 // Schema to create the User model
@@ -14,13 +14,13 @@ const userSchema = new Schema(
             type: String,
             required: true,
             unique: true,
-            match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Email address is not valid. Please enter a valid email address.'], // Validates the email address field
+            match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Email address is not valid. Please enter a valid email address.'], // Validates the email address field against a regex
         },
-        thoughts: [{
+        thoughts: [{ // Array containing users thoughts
             type: Schema.Types.ObjectId,
             ref: 'thought', // References the Thought model
         }],
-        friends: [{
+        friends: [{ // Array containing users friends
             type: Schema.Types.ObjectId,
             ref: 'user', // References itself
         }],
