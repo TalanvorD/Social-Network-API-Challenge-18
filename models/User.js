@@ -26,19 +26,16 @@ const userSchema = new Schema(
         }],
     },
     {
-        toJson: {
+        toJSON: {
             getters: true,
             virtuals: true,
         },
+        id: false,
     }
 );
 
 userSchema.virtual('friendCount').get(function () { // friendCount virtual, not stored in the DB
-        if (!userSchema.friends) {
-        return;
-    } else {
-        return this.friends.length; // Retrieves the length of the friends array and returns the value
-    }
+        if (this.friends) { return this.friends.length; } // Retrieves the length of the friends array and returns the value
 });
 
 const User = model('user', userSchema);

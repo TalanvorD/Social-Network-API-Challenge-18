@@ -1,7 +1,6 @@
 const { Schema, Types, model } = require('mongoose');
 const reactionSchema = require('./Reaction.js'); // Importing the reactionSchema
 
-
 // Schema to create the Thought model
 const thoughtSchema = new Schema(
     {
@@ -29,19 +28,16 @@ const thoughtSchema = new Schema(
         reactions: [ reactionSchema ], // Array of the reactions using the reactionSchema
     },
     {
-        toJson: {
+        toJSON: {
             getters: true,
             virtuals: true,
         },
+        id: false,
     }
 );
 
-thoughtSchema.virtual('reactionCount').get(function () { // reactionCount virtual, gets the reactions for the thought for every user, not stored in the DB
-        if (!this.reactions) {
-        return;
-    } else {
-        return this.reactions.length; // Retrieves the length of the reactions array and returns the value
-    }
+thoughtSchema.virtual('reactionCount').get(function () { // reactionCount virtual, gets all reactions to the thought, not stored in the DB
+    if (this.reactions) { return this.reactions.length; } // Retrieves the length of the reactions array and returns the value
 });
 
 const Thought = model('thought', thoughtSchema);

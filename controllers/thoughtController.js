@@ -14,7 +14,7 @@ module.exports = {
     
     async getSingleThought(req, res) { // Returns a single thought
         try {
-            const singleThought = await Thought.findOne({ _id: ObjectId(req.params.thoughtId) });
+            const singleThought = await Thought.findOne({ _id: req.params.thoughtId });
             if (singleThought) { return res.status(200).json(singleThought); }
         } catch (err) {
             console.log(err);
@@ -42,7 +42,7 @@ module.exports = {
     
     async updateThought(req, res) { // Updates a thought from a PUT json body
         try {
-            const updatedThought = await Thought.findOneAndUpdate({ _id: ObjectId(req.params.thoughtId) },
+            const updatedThought = await Thought.findOneAndUpdate({ _id: req.params.thoughtId },
                 {
                     thoughtText: req.body.thoughtText,
                     username: req.body.username
@@ -59,7 +59,7 @@ module.exports = {
     
     async deleteThought(req, res) { // Deletes a single thought
         try {
-            const deletedThought = await Thought.findOneAndDelete({ _id: ObjectId(req.params.thoughtId) }, { rawResult: true });
+            const deletedThought = await Thought.findOneAndDelete({ _id: req.params.thoughtId }, { rawResult: true });
             if (deletedThought) { return res.status(200).json(deletedThought); }
         } catch (err) {
             console.log(err);
@@ -69,7 +69,7 @@ module.exports = {
 
     async addReaction(req, res) { // Creates a new reaction from a POST json body and associates it with a thought
         try {
-            const newReaction = await Thought.findOneAndUpdate({ _id: ObjectId(req.params.thoughtId) },
+            const newReaction = await Thought.findOneAndUpdate({ _id: req.params.thoughtId },
             {
                 $addToSet: {
                     reactions: {
@@ -87,7 +87,7 @@ module.exports = {
 
     async deleteReaction(req, res) { // Deletes a reaction
         try {
-            const deletedReaction = await Thought.findOneAndUpdate({ _id: ObjectId(req.params.thoughtId) },
+            const deletedReaction = await Thought.findOneAndUpdate({ _id: req.params.thoughtId },
             {
                 $pull: { reactions: { _id: req.params.reactionId } }
             },
