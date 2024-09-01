@@ -48,6 +48,7 @@ module.exports = {
                     username: req.body.username
                 },
                 {
+                    runValidators: true,
                     new: true
                 });
             if (updatedThought) { return res.status(200).json(updatedThought); }
@@ -88,12 +89,8 @@ module.exports = {
     async deleteReaction(req, res) { // Deletes a reaction
         try {
             const deletedReaction = await Thought.findOneAndUpdate({ _id: req.params.thoughtId },
-            {
-                $pull: { reactions: { _id: req.params.reactionId } }
-            },
-            {
-                new: true
-            });
+            { $pull: { reactions: { _id: req.params.reactionId } } },
+            { new: true });
             if (deletedReaction) { return res.status(200).json(deletedReaction); }
         } catch (err) {
             console.log(err);

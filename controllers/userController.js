@@ -1,4 +1,4 @@
-const { ObjectId } = require('mongoose').Types; // Mongoose ObjectID
+// const { ObjectId } = require('mongoose').Types; // Mongoose ObjectID // Not actually needed?
 const { User, Thought, Reaction } = require('../models'); // Importing models
 
 module.exports = {
@@ -49,9 +49,7 @@ module.exports = {
                     email: req.body.email,
                     username: req.body.username
                 },
-                {
-                    new: true
-                });
+                { new: true });
             if (updatedUser) { return res.status(200).json(updatedUser); }
         } catch (err) {
             console.log(err);
@@ -61,9 +59,10 @@ module.exports = {
     
     async deleteUser(req, res) { // Deletes a single user and associated thoughts
         try {
-            const deletedUser = await User.findOneAndDelete({ _id: ObjectId(req.params.userId) }, { rawResult: true });
-            const deletedUserThoughts = await Thought.deleteMany({username: deletedUser.value.username}, { rawResult: true }); // Bonus for deleting associated thoughts along with the user.
-            if (deletedUser && deletedUserThoughts) { return res.status(200).json({ message: `${deletedUser.value.username} and their associated thoughts have been deleted.` }); }
+            const deletedUser = await User.findOneAndDelete({ _id: req.params.userId }, { rawResult: true });
+            const deletedUserName = deletedUser.value.username;
+            const deletedUserThoughts = await Thought.deleteMany({username: deletedUserName}, { rawResult: true }); // Bonus for deleting associated thoughts along with the user.
+            if (deletedUser && deletedUserThoughts) { return res.status(200).json({ message: `${deletedUserName} and their associated thoughts have been deleted.` }); }
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -72,13 +71,9 @@ module.exports = {
 
     async addFriend(req, res) {
         try {
-            const newFriend = await User.findOneAndUpdate({ _id: ObjectId(req.params.userId) },
-            {
-                $addToSet: { friends: ObjectId(req.params.friendId)}
-            },
-            {
-                new: true
-            });
+            const newFriend = await User.findOneAndUpdate({ _id: req.params.userId },
+            { $addToSet: { friends: req.params.friendId} },
+            { new: true });
             if (newFriend) { return res.status(200).json(newFriend); }
         } catch (err) {
             console.log(err);
@@ -88,13 +83,9 @@ module.exports = {
 
     async deleteFriend(req, res) {
         try {
-            const deletedFriend = await User.findOneAndUpdate({ _id: ObjectId(req.params.userId) },
-            {
-                $pull: { friends: ObjectId(req.params.friendId)}
-            },
-            {
-                new: true
-            });
+            const deletedFriend = await User.findOneAndUpdate({ _id: req.params.userId },
+            { $pull: { friends: req.params.friendId } },
+            { new: true });
             if (deletedFriend) { return res.status(200).json(deletedFriend); }
         } catch (err) {
             console.log(err);
