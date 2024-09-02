@@ -4,7 +4,7 @@ const { User, Thought, Reaction } = require('../models'); // Importing models
 module.exports = {
     async getUsers(req, res) { // Returns all users and their associated friends
         try {
-            const users = await User.find({}).populate({ path: 'thoughts', select: '-__v' });
+            const users = await User.find({}).select('-__v');
             if (users) { res.status(200).json(users); }
         } catch (err) {
             console.log(err);
@@ -14,8 +14,9 @@ module.exports = {
     
     async getSingleUser(req, res) { // Returns a single user and their associated friends
         try {
-            const singleUser = await User.findOne({ _id: req.params.userId })
-                .populate({ path: 'friends', select: 'username email' });
+            const singleUser = await User.findOne({ _id: req.params.userId} ).select('-__v')
+                .populate({ path: 'thoughts', select: '-__v' })
+                .populate({ path: 'friends', select: '-__v -thoughts -friends' });
             const singleUserFriend = await User.findOne({ _id: req.params.friendId });
             if (singleUser || singleUserFriend) { return res.status(200).json(singleUser || singleUserFriend); }
         } catch (err) {
@@ -32,9 +33,7 @@ module.exports = {
             });
             await newUser.save();
             const userThought = await User.findOneAndUpdate({ username: req.body.username },
-                {
-                    $addToSet: { thoughts: newUser._id }
-                });
+                { $addToSet: { thoughts: newUser._id } });
             if (newUser && userThought) { return res.status(200).json(newUser); }
         } catch (err) {
             console.log(err);

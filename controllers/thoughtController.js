@@ -4,7 +4,7 @@ const { User, Thought, Reaction } = require('../models'); // Importing models
 module.exports = {
     async getThoughts(req, res) { // Returns all thoughts
         try {
-            const thoughts = await Thought.find({});
+            const thoughts = await Thought.find({}).select('-__v');
             if (thoughts) { res.status(200).json(thoughts); }
         } catch (err) {
             console.log(err);
@@ -14,7 +14,7 @@ module.exports = {
     
     async getSingleThought(req, res) { // Returns a single thought
         try {
-            const singleThought = await Thought.findOne({ _id: req.params.thoughtId });
+            const singleThought = await Thought.findOne({ _id: req.params.thoughtId }).select('-__v');
             if (singleThought) { return res.status(200).json(singleThought); }
         } catch (err) {
             console.log(err);
@@ -78,7 +78,8 @@ module.exports = {
                         username: req.body.username
                     }
                 }
-            });
+            },
+            { new: true });
             if (newReaction) { return res.status(200).json(newReaction); }
         } catch (err) {
             console.log(err);
