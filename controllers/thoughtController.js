@@ -15,7 +15,8 @@ module.exports = {
     async getSingleThought(req, res) { // Returns a single thought
         try {
             const singleThought = await Thought.findOne({ _id: req.params.thoughtId }).select('-__v');
-            if (singleThought) { return res.status(200).json(singleThought); }
+            if (!singleThought) { return res.status(404).json({ message: 'Thought not found!' }) }
+                else { return res.status(200).json(singleThought); };
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -30,10 +31,9 @@ module.exports = {
             });
             await newThought.save();
             const userThought = await User.findOneAndUpdate({ username: req.body.username },
-                {
-                    $addToSet: { thoughts: newThought._id }
-                });
-            if (newThought && userThought) { return res.status(200).json(newThought); }
+                { $addToSet: { thoughts: newThought._id } });
+            if (!newThought) { return res.status(404).json({ message: 'Error creating new thought!' }); }
+                else { return res.status(200).json(newThought); };
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -51,7 +51,8 @@ module.exports = {
                     runValidators: true,
                     new: true
                 });
-            if (updatedThought) { return res.status(200).json(updatedThought); }
+            if (!updatedThought) { return res.status(404).json({ message: 'Thought not found to update!' }); }
+                else { return res.status(200).json(updatedThought); };
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -61,7 +62,8 @@ module.exports = {
     async deleteThought(req, res) { // Deletes a single thought
         try {
             const deletedThought = await Thought.findOneAndDelete({ _id: req.params.thoughtId }, { rawResult: true });
-            if (deletedThought) { return res.status(200).json(deletedThought); }
+            if (!deletedThought) { return res.status(200).json({ message: 'Thought not found to delete!' }); }
+                else { return res.status(200).json({ message: 'Thought has been deleted.' }); };
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -79,8 +81,9 @@ module.exports = {
                     }
                 }
             },
-            { new: true });
-            if (newReaction) { return res.status(200).json(newReaction); }
+            { new: true }).select('-__v');
+            if (!newReaction) { return res.status(200).json({ message: 'There was a problem adding a reaction!' }); }
+                else { return res.status(200).json(newReaction); };
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);
@@ -91,8 +94,9 @@ module.exports = {
         try {
             const deletedReaction = await Thought.findOneAndUpdate({ _id: req.params.thoughtId },
             { $pull: { reactions: { _id: req.params.reactionId } } },
-            { new: true });
-            if (deletedReaction) { return res.status(200).json(deletedReaction); }
+            { new: true }).select('-__v');
+            if (!deletedReaction) { return res.status(200).json({ message: 'There was a problem deleting a reaction!' }); }
+                else { return res.status(200).json(deletedReaction); };
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);
