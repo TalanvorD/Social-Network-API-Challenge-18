@@ -50,7 +50,7 @@ module.exports = {
                 },
                 { new: true }).select('-__v');
             if (!updatedUser) { return res.status(404).json({ message: 'User not found to update!' }); }
-                else { return res.status(200).json({ message: `${updatedUser.username} has been updated.` }); };
+                else { return res.status(200).json({ message: `${updatedUser.username} has been updated.`, updatedUser }); };
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -62,7 +62,7 @@ module.exports = {
             const deletedUser = await User.findOneAndDelete({ _id: req.params.userId }, { rawResult: true }).select('-__v');
             const deletedUserThoughts = await Thought.deleteMany( {username: deletedUser.username}, { rawResult: true }); // Bonus for deleting associated thoughts along with the user.
             if (!deletedUser) { return res.status(404).json({ message: 'User not found to delete!' }); }
-                else { return res.status(200).json({ message: `${deletedUser.username} and their associated thoughts have been deleted.` }); };
+                else { return res.status(200).json({ message: `${deletedUser.username} and their associated thoughts have been deleted.`, deletedUser }); };
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -75,7 +75,7 @@ module.exports = {
             { $addToSet: { friends: req.params.friendId} },
             { new: true }).select('-__v');
             if (!newFriend) { return res.status(404).json({ message: 'There was a problem adding a friend!' }); }
-                else { return res.status(200).json({ message: 'Friend has been added.' }); }
+                else { return res.status(200).json({ message: 'Friend has been added.', newFriend }); }
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -88,7 +88,7 @@ module.exports = {
             { $pull: { friends: req.params.friendId } },
             { new: true }).select('-__v');
             if (!deletedFriend) { return res.status(404).json({ message: 'There was a problem deleting a friend!' }); }
-                else { return res.status(200).json({ message: 'Friend has been deleted.' }); }
+                else { return res.status(200).json({ message: 'Friend has been deleted.', deletedFriend }); }
         } catch (err) {
             console.log(err);
             res.status(500).json(err);

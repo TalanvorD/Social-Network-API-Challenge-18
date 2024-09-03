@@ -33,7 +33,7 @@ module.exports = {
             const userThought = await User.findOneAndUpdate({ username: req.body.username },
                 { $addToSet: { thoughts: newThought._id } });
             if (!newThought) { return res.status(404).json({ message: 'Error creating new thought!' }); }
-                else { return res.status(200).json(newThought); };
+                else { return res.status(200).json({ message: 'New thought has been created!', newThought }); };
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -52,7 +52,7 @@ module.exports = {
                     new: true
                 });
             if (!updatedThought) { return res.status(404).json({ message: 'Thought not found to update!' }); }
-                else { return res.status(200).json(updatedThought); };
+                else { return res.status(200).json({ message: 'Thought has been updated.', updatedThought }); };
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -63,7 +63,7 @@ module.exports = {
         try {
             const deletedThought = await Thought.findOneAndDelete({ _id: req.params.thoughtId }, { rawResult: true });
             if (!deletedThought) { return res.status(200).json({ message: 'Thought not found to delete!' }); }
-                else { return res.status(200).json({ message: 'Thought has been deleted.' }); };
+                else { return res.status(200).json({ message: 'Thought has been deleted.', deletedThought }); };
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -83,7 +83,7 @@ module.exports = {
             },
             { new: true }).select('-__v');
             if (!newReaction) { return res.status(200).json({ message: 'There was a problem adding a reaction!' }); }
-                else { return res.status(200).json(newReaction); };
+                else { return res.status(200).json({ message: 'Reaction has been created.',  newReaction }); };
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);
@@ -96,7 +96,7 @@ module.exports = {
             { $pull: { reactions: { _id: req.params.reactionId } } },
             { new: true }).select('-__v');
             if (!deletedReaction) { return res.status(200).json({ message: 'There was a problem deleting a reaction!' }); }
-                else { return res.status(200).json(deletedReaction); };
+                else { return res.status(200).json({ message: 'Reaction has been deleted.', deletedReaction }); };
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);

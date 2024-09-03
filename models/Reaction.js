@@ -2,10 +2,6 @@ const { Schema, Types } = require('mongoose');
 
 const reactionSchema = new Schema( // Schema for reactions, not an actual model
     {
-        reactionId: { // Creates the reactionId using mongoose
-            type: Schema.Types.ObjectId,
-            default: function () { return new Types.ObjectId(); }
-        },
         reactionBody: { // The content for the reaction
             type: String,
             required: true,
@@ -26,6 +22,13 @@ const reactionSchema = new Schema( // Schema for reactions, not an actual model
             type: String,
             required: true,
         },
+    },
+    {
+        toJSON: {
+            getters: true,
+            virtuals: true,
+        },
+        id: false,
     },
 );
 
