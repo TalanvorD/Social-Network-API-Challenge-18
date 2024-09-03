@@ -48,7 +48,7 @@ module.exports = {
                     email: req.body.email,
                     username: req.body.username
                 },
-                { new: true });
+                { new: true }).select('-__v');
             if (!updatedUser) { return res.status(404).json({ message: 'User not found to update!' }); }
                 else { return res.status(200).json({ message: `${updatedUser.username} has been updated.` }); };
         } catch (err) {
@@ -59,10 +59,10 @@ module.exports = {
     
     async deleteUser(req, res) { // Deletes a single user and associated thoughts
         try {
-            const deletedUser = await User.findOneAndDelete({ _id: req.params.userId }, { rawResult: true });
-            const deletedUserName = deletedUser.value.username;
-            const deletedUserThoughts = await Thought.deleteMany({username: deletedUserName}, { rawResult: true }); // Bonus for deleting associated thoughts along with the user.
-            if (deletedUser && deletedUserThoughts) { return res.status(200).json({ message: `${deletedUserName} and their associated thoughts have been deleted.` }); }
+            const deletedUser = await User.findOneAndDelete({ _id: req.params.userId }, { rawResult: true }).select('-__v');
+            const deletedUserThoughts = await Thought.deleteMany( {username: deletedUser.username}, { rawResult: true }); // Bonus for deleting associated thoughts along with the user.
+            if (!deletedUser) { return res.status(404).json({ message: 'User not found to delete!' }); }
+                else { return res.status(200).json({ message: `${deletedUser.username} and their associated thoughts have been deleted.` }); };
         } catch (err) {
             console.log(err);
             res.status(500).json(err);
@@ -73,7 +73,7 @@ module.exports = {
         try {
             const newFriend = await User.findOneAndUpdate({ _id: req.params.userId },
             { $addToSet: { friends: req.params.friendId} },
-            { new: true });
+            { new: true }).select('-__v');
             if (!newFriend) { return res.status(404).json({ message: 'There was a problem adding a friend!' }); }
                 else { return res.status(200).json({ message: 'Friend has been added.' }); }
         } catch (err) {
@@ -86,7 +86,7 @@ module.exports = {
         try {
             const deletedFriend = await User.findOneAndUpdate({ _id: req.params.userId },
             { $pull: { friends: req.params.friendId } },
-            { new: true });
+            { new: true }).select('-__v');
             if (!deletedFriend) { return res.status(404).json({ message: 'There was a problem deleting a friend!' }); }
                 else { return res.status(200).json({ message: 'Friend has been deleted.' }); }
         } catch (err) {
